@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem.XR;
 
@@ -18,10 +19,14 @@ public class PlayerMovement : MonoBehaviour
     public bool isCameraCanMove = true;
     public bool IsMoving;
     public bool IsCrouching;
+    public bool isStepReady;
+    public SoundEventInvoker SoundEventInvoker;
     public bool IsGrounded => controller.isGrounded;
+    [Range(0, 10)] public float stepCooldown = 1;
     private void Start()
     {
         mouseblock();
+        isStepReady = true; 
         controller = GetComponent<CharacterController>();
     }
 
@@ -29,6 +34,18 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isPlayerCanMove) Move();
         if(isCameraCanMove) Camera();
+        if (IsMoving && isStepReady) 
+        {
+            SoundEventInvoker.InvokePlay();
+            isStepReady = false;
+            StartCoroutine(StepCooldown(stepCooldown));
+        }
+    }
+
+    public IEnumerator StepCooldown(float deltaTime)
+    {
+        yield return new WaitForSeconds(deltaTime);
+        isStepReady = true;
     }
     public void CameraBlock()
     {

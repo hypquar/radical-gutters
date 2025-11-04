@@ -5,8 +5,10 @@ using UnityEngine.UI;
 public class Flashlight : MonoBehaviour
 {
     [Header("Components")]
-    private Light _flashlight;
+    [SerializeField ]private GameObject _flashlight;
     [SerializeField] private Slider _slider;
+    [SerializeField] private Light _violet;
+    [SerializeField] private Light _normal;
 
     [Header("Battery Settings")]
     [SerializeField] private int _maxBattery = 100;
@@ -26,7 +28,6 @@ public class Flashlight : MonoBehaviour
 
     private void Start()
     {
-        _flashlight = GetComponent<Light>();
         UpdateFlashlightState();
         _slider.maxValue = _maxBattery;
     }
@@ -57,6 +58,7 @@ public class Flashlight : MonoBehaviour
         // При выключении фонарика сбрасываем УФ режим
         if (!_isOn && _isUltraViolet)
         {
+            _violet.transform.localEulerAngles = new Vector3(-180, 0, 0);
             _isUltraViolet = false;
         }
 
@@ -82,19 +84,21 @@ public class Flashlight : MonoBehaviour
 
     private void UpdateFlashlightState()
     {
-        _flashlight.enabled = _isOn;
+        _flashlight.SetActive(_isOn);
 
         if (_isOn)
         {
             if (_isUltraViolet)
             {
-                _flashlight.color = Color.violet;
-                _flashlight.intensity = 15f;
+                _violet.transform.localEulerAngles = new Vector3(0, 0, 0);
+                _violet.enabled = true;
+                _normal.enabled = false;
             }
             else
             {
-                _flashlight.color = Color.white;
-                _flashlight.intensity = 30f;
+                _violet.transform.localEulerAngles = new Vector3(-180, 0, 0);
+                _violet.enabled = false;
+                _normal.enabled = true;
             }
         }
         else
