@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -13,9 +14,11 @@ public class PlayerMovement : MonoBehaviour
     [Range(1f, 3f)] public float SmoothSpeed = 0.3f;
     private float _MousePOS_y = 0;
     [SerializeField] private float _MouseSensivity = 3.0f;
-    public bool _IsPlayerCanMove = true;
-    public bool _IsCameraCanMove = true;
-
+    public bool isPlayerCanMove = true;
+    public bool isCameraCanMove = true;
+    public bool IsMoving;
+    public bool IsCrouching;
+    public bool IsGrounded => controller.isGrounded;
     private void Start()
     {
         mouseblock();
@@ -29,23 +32,23 @@ public class PlayerMovement : MonoBehaviour
     }
     public void CameraBlock()
     {
-        Debug.Log("Управление Основной камерой отключилось");
-        _IsCameraCanMove = false;
+        Debug.Log("Г“ГЇГ°Г ГўГ«ГҐГ­ГЁГҐ ГЋГ±Г­Г®ГўГ­Г®Г© ГЄГ Г¬ГҐГ°Г®Г© Г®ГІГЄГ«ГѕГ·ГЁГ«Г®Г±Гј");
+        isCameraCanMove = false;
     }
     public void CameraUnblock()
     {
-        Debug.Log("Управление Основной камерой включилось");
-        _IsCameraCanMove = true;
+        Debug.Log("Г“ГЇГ°Г ГўГ«ГҐГ­ГЁГҐ ГЋГ±Г­Г®ГўГ­Г®Г© ГЄГ Г¬ГҐГ°Г®Г© ГўГЄГ«ГѕГ·ГЁГ«Г®Г±Гј");
+        isCameraCanMove = true;
     }
     public void PlayerMovementBlock()
     {
-        Debug.Log("Передвижение игрока заблокировано");
-        _IsPlayerCanMove = false;
+        Debug.Log("ГЏГҐГ°ГҐГ¤ГўГЁГ¦ГҐГ­ГЁГҐ ГЁГЈГ°Г®ГЄГ  Г§Г ГЎГ«Г®ГЄГЁГ°Г®ГўГ Г­Г®");
+        isPlayerCanMove = false;
     }
     public void PlayerMovementUnblock()
     {
-        Debug.Log("Передвижение игрока разблокировано");
-        _IsPlayerCanMove = true;
+        Debug.Log("ГЏГҐГ°ГҐГ¤ГўГЁГ¦ГҐГ­ГЁГҐ ГЁГЈГ°Г®ГЄГ  Г°Г Г§ГЎГ«Г®ГЄГЁГ°Г®ГўГ Г­Г®");
+        isPlayerCanMove = true;
     }
     public void mouseblock()
     {
@@ -60,27 +63,32 @@ public class PlayerMovement : MonoBehaviour
     private void Move()
     {
         Vector2 MoveDirection = new Vector2(Input.GetAxis("Vertical"), Input.GetAxis("Horizontal"));
-
-        // Гравитация 
+        IsMoving = MoveDirection.magnitude > 0.1f;
+        // ГѓГ°Г ГўГЁГІГ Г¶ГЁГї 
         if (controller.isGrounded)
         {
             _velocity = 0.0f;
 
-            // Прыжок
+            // ГЏГ°Г»Г¦Г®ГЄ
             if (Input.GetKeyDown(KeyCode.Space) && controller.isGrounded == true) _velocity = _JumpPower;
         }
         _velocity += _gravity * Time.deltaTime;
-        // приседание
-        if (Input.GetKey(KeyCode.LeftControl))
+        // ГЏГ°ГЁГ±ГҐГ¤Г Г­ГЁГҐ
+        bool wasCrouching = IsCrouching; // Г‡Г ГЇГ®Г¬ГЁГ­Г ГҐГ¬ ГЇГ°ГҐГ¤Г»Г¤ГіГ№ГҐГҐ Г±Г®Г±ГІГ®ГїГ­ГЁГҐ
+        IsCrouching = Input.GetKey(KeyCode.LeftControl);
+
+        if (IsCrouching)
         {
             controller.height = 0.3f;
             _SpeedCurrent = 2.0f;
         }
         else controller.height = 1.8f;
 
-        // Бег
-        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.LeftControl) == false) _SpeedCurrent = Mathf.Lerp(_SpeedCurrent, _SpeedRun, Time.deltaTime * SmoothSpeed);
-        else _SpeedCurrent = Mathf.Lerp(_SpeedCurrent, _SpeedWalk, Time.deltaTime * SmoothSpeed);
+        // ГЃГҐГЈ (ГІГ®Г«ГјГЄГ® ГҐГ±Г«ГЁ Г­ГҐ ГЇГ°ГЁГ±ГҐГ¤Г ГҐГІ)
+        if (Input.GetKey(KeyCode.LeftShift) && !IsCrouching)
+            _SpeedCurrent = Mathf.Lerp(_SpeedCurrent, _SpeedRun, Time.deltaTime * SmoothSpeed);
+        else if (!IsCrouching) // Г’Г®Г«ГјГЄГ® ГҐГ±Г«ГЁ Г­ГҐ ГЇГ°ГЁГ±ГҐГ¤Г ГҐГІ
+            _SpeedCurrent = Mathf.Lerp(_SpeedCurrent, _SpeedWalk, Time.deltaTime * SmoothSpeed);
 
         Vector3 POS = (transform.forward * MoveDirection.x + transform.right * MoveDirection.y) * _SpeedCurrent + Vector3.up * _velocity;
         controller.Move(POS * Time.deltaTime);
