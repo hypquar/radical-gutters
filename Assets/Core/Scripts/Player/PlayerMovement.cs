@@ -27,8 +27,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        if (_IsPlayerCanMove) Move();
-        if( _IsCameraCanMove) Camera();
+        if (isPlayerCanMove) Move();
+        if(isCameraCanMove) Camera();
     }
     public void CameraBlock()
     {

@@ -30,7 +30,7 @@ public class EnemyController : MonoBehaviour
     private float attackWarningTimer = 0f;
     private bool isPlayerInAttackZone = false;
 
-    [SerializeField] private PlayerStatus playerStatus; // Предполагаемый скрипт игрока для проверки движения и корточек
+    [SerializeField] private PlayerMovement playerMovementStatus; // Предполагаемый скрипт игрока для проверки движения и корточек
 
     public UnityEvent OnAttack;
 
@@ -51,7 +51,7 @@ public class EnemyController : MonoBehaviour
     {
         player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
-            playerStatus = player.GetComponent<PlayerStatus>();                                         // !!!  ТУТ НУЖНО ИСПРАВИТЬ  !!!
+            playerMovementStatus = player.GetComponent<PlayerMovement>();                                         // !!!  ТУТ НУЖНО ИСПРАВИТЬ  !!!
 
         agent = GetComponent<NavMeshAgent>();
 
@@ -95,11 +95,11 @@ public class EnemyController : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (player == null || playerStatus == null) return;
+        if (player == null || playerMovementStatus == null) return;
 
         float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
-        bool playerIsMovingAndIsCrouching = playerStatus.IsMoving && !playerStatus.IsCrouching;         // !!!  ТУТ НУЖНО ИСПРАВИТЬ  !!!
-        bool playerIsMoving = playerStatus.IsMoving;                                                    // !!!  ТУТ НУЖНО ИСПРАВИТЬ  !!!
+        bool playerIsMovingAndIsCrouching = playerMovementStatus.IsMoving && !playerMovementStatus.IsCrouching;         // !!!  ТУТ НУЖНО ИСПРАВИТЬ  !!!
+        bool playerIsMoving = playerMovementStatus.IsMoving;                                                    // !!!  ТУТ НУЖНО ИСПРАВИТЬ  !!!
 
         // Проверка попадания под свет фонарика (см. ниже метод OnTriggerStay)
         // Реакция на свет реализована отдельно
