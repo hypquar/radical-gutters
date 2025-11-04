@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -13,9 +14,11 @@ public class PlayerMovement : MonoBehaviour
     [Range(1f, 3f)] public float SmoothSpeed = 0.3f;
     private float _MousePOS_y = 0;
     [SerializeField] private float _MouseSensivity = 3.0f;
-    public bool _IsPlayerCanMove = true;
-    public bool _IsCameraCanMove = true;
-
+    public bool isPlayerCanMove = true;
+    public bool isCameraCanMove = true;
+    public bool IsMoving;
+    public bool IsCrouching;
+    public bool IsGrounded => controller.isGrounded;
     private void Start()
     {
         mouseblock();
@@ -24,28 +27,28 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        if (_IsPlayerCanMove) Move();
-        if( _IsCameraCanMove) Camera();
+        if (isPlayerCanMove) Move();
+        if(isCameraCanMove) Camera();
     }
     public void CameraBlock()
     {
         Debug.Log("Управление Основной камерой отключилось");
-        _IsCameraCanMove = false;
+        isCameraCanMove = false;
     }
     public void CameraUnblock()
     {
         Debug.Log("Управление Основной камерой включилось");
-        _IsCameraCanMove = true;
+        isCameraCanMove = true;
     }
     public void PlayerMovementBlock()
     {
         Debug.Log("Передвижение игрока заблокировано");
-        _IsPlayerCanMove = false;
+        isPlayerCanMove = false;
     }
     public void PlayerMovementUnblock()
     {
         Debug.Log("Передвижение игрока разблокировано");
-        _IsPlayerCanMove = true;
+        isPlayerCanMove = true;
     }
     public void mouseblock()
     {
@@ -60,7 +63,7 @@ public class PlayerMovement : MonoBehaviour
     private void Move()
     {
         Vector2 MoveDirection = new Vector2(Input.GetAxis("Vertical"), Input.GetAxis("Horizontal"));
-
+        IsMoving = MoveDirection.magnitude > 0.1f;
         // Гравитация 
         if (controller.isGrounded)
         {
@@ -70,17 +73,22 @@ public class PlayerMovement : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space) && controller.isGrounded == true) _velocity = _JumpPower;
         }
         _velocity += _gravity * Time.deltaTime;
-        // приседание
-        if (Input.GetKey(KeyCode.LeftControl))
+        // Приседание
+        bool wasCrouching = IsCrouching; // Запоминаем предыдущее состояние
+        IsCrouching = Input.GetKey(KeyCode.LeftControl);
+
+        if (IsCrouching)
         {
             controller.height = 0.3f;
             _SpeedCurrent = 2.0f;
         }
         else controller.height = 1.8f;
 
-        // Бег
-        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.LeftControl) == false) _SpeedCurrent = Mathf.Lerp(_SpeedCurrent, _SpeedRun, Time.deltaTime * SmoothSpeed);
-        else _SpeedCurrent = Mathf.Lerp(_SpeedCurrent, _SpeedWalk, Time.deltaTime * SmoothSpeed);
+        // Бег (только если не приседает)
+        if (Input.GetKey(KeyCode.LeftShift) && !IsCrouching)
+            _SpeedCurrent = Mathf.Lerp(_SpeedCurrent, _SpeedRun, Time.deltaTime * SmoothSpeed);
+        else if (!IsCrouching) // Только если не приседает
+            _SpeedCurrent = Mathf.Lerp(_SpeedCurrent, _SpeedWalk, Time.deltaTime * SmoothSpeed);
 
         Vector3 POS = (transform.forward * MoveDirection.x + transform.right * MoveDirection.y) * _SpeedCurrent + Vector3.up * _velocity;
         controller.Move(POS * Time.deltaTime);
