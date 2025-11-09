@@ -61,7 +61,7 @@ public class PickableItem : MonoBehaviour, IInteractable
         if (rb != null)
         {
             Vector3 throwDirection = Camera.main.transform.forward;
-            rb.AddForce(throwDirection * 15f, ForceMode.Impulse);
+            rb.AddForce(throwDirection * 5f, ForceMode.Impulse);
         }
     }
 

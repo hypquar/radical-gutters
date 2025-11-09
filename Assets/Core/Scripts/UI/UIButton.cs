@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.iOS;
 using UnityEngine.SceneManagement;
 
 public class UIButton : MonoBehaviour
@@ -54,7 +53,9 @@ public class UIButton : MonoBehaviour
 
     public void ExitGame()
     {
+    #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
+    #endif
         Application.Quit();
     }
 

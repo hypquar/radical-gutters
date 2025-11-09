@@ -1,11 +1,14 @@
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
+using UnityEngine.UIElements;
 
 public class EnemyController : MonoBehaviour
 {
     [SerializeField] private Transform[] patrolPoints;        // Точки патрулирования
     private Transform currentPoint;
+
+    [SerializeField] private AudioPlayer soundEventInvoker; // Компонент для прослушивания звуковых событий
 
     private enum State { patrol, walkToPlayer }
     [SerializeField] private State currentState = State.patrol;
@@ -33,6 +36,8 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private PlayerMovement playerMovementStatus; // Предполагаемый скрипт игрока для проверки движения и корточек
 
     public UnityEvent OnAttack;
+
+    private bool screamed;
 
 
     private void OnDrawGizmosSelected()
@@ -181,7 +186,7 @@ public class EnemyController : MonoBehaviour
     // Атака игрока (game over)
     private void AttackPlayer()                                                                             // !!!  ТУТ НУЖНО ИСПРАВИТЬ  !!!
     {
-        Debug.LogError("Game Over: Player caught!");
+        Debug.Log("Game Over: Player caught!");
         OnAttack.Invoke();
         // Тут можно реализовать переход в сцену поражения или другую логику
     }
@@ -189,7 +194,12 @@ public class EnemyController : MonoBehaviour
     // Преследование игрока
     private void WalkToPlayer()                                                                             // !!!  ТУТ НУЖНО ИСПРАВИТЬ  !!!
     {
-        Debug.LogWarning("Тихо!");
+        Debug.Log("Тихо!");
+        if (!screamed)
+        {
+            screamed = !screamed;
+            soundEventInvoker.PlaySound();
+        }
         // Тут можно реализовать переход в сцену или другую логику
     }
 

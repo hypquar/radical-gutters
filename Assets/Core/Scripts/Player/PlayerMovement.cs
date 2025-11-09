@@ -87,7 +87,7 @@ public class PlayerMovement : MonoBehaviour
             _velocity = 0.0f;
 
             // Ïðûæîê
-            if (Input.GetKeyDown(KeyCode.Space) && controller.isGrounded == true) _velocity = _JumpPower;
+            //if (Input.GetKeyDown(KeyCode.Space) && controller.isGrounded == true) _velocity = _JumpPower;
         }
         _velocity += _gravity * Time.deltaTime;
         // Ïðèñåäàíèå

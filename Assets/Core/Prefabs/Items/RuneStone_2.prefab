@@ -132,6 +132,7 @@ GameObject:
   - component: {fileID: 2752841043199072791}
   - component: {fileID: -1949484723471731240}
   - component: {fileID: 59097814905571491}
+  - component: {fileID: 6673359048029544007}
   m_Layer: 0
   m_Name: RuneStone_2
   m_TagString: Untagged
@@ -204,6 +205,18 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.2120252, y: 0.5835263, z: 1.2270511}
   m_Center: {x: 0.04452777, y: 0.20823684, z: -0.11352563}
+--- !u!114 &6673359048029544007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1371863823078139578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50469722a0910da46aa8fdf28b0502f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PickableItem
 --- !u!1001 &809595035777881599
 PrefabInstance:
   m_ObjectHideFlags: 0
